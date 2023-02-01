@@ -30,7 +30,7 @@ function TauntPrefab:Start()
 	local tauntOBJ = GameObject.Find("[LQS]TauntSystem(Clone)")
 
 	if (tauntOBJ ~= nil) then
-		tauntSystemBase = tauntOBJ.gameObject.GetComponent(TauntSystem)
+		tauntSystemBase = tauntOBJ.gameObject.GetComponent(ScriptedBehaviour).self
 	end
 end
 
