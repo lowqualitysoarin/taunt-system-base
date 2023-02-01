@@ -247,8 +247,22 @@ function TauntSystem:GetTauntMods()
 		coroutine.yield(WaitForSeconds(0.15))
 		print("<color=aqua>[TS] Getting Taunt Mods...</color>")
 		coroutine.yield(WaitForSeconds(0.05))
-		local tauntModsFound = GameObject.FindObjectsOfType(TauntModContent)
 
+		-- Gets the taunt mods
+		local getAllScriptedBehaviours = GameObject.FindObjectsOfType(ScriptedBehaviour)
+		local tauntModsFound = {}
+
+		for _,behavior in pairs(getAllScriptedBehaviours) do
+			local script = behavior.self
+
+			if (script.isATauntMod ~= nil) then
+				if (script.isATauntMod) then
+					tauntModsFound[#tauntModsFound+1] = script
+				end
+			end
+		end
+
+		-- Extracting prefabs
 		if (#tauntModsFound > 0) then
 			print("<color=aqua>[TS] Found </color>" .. #tauntModsFound .. " <color=aqua>Mods</color>")
 			print("<color=aqua>[TS] Extracting Assets...</color>")
