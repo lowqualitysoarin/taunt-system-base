@@ -1,6 +1,9 @@
 behaviour("TauntModContent")
 
 function TauntModContent:Start()
+	-- Confirmation
+	self.isATauntMod = true
+
 	-- Data
 	self.data = self.gameObject.GetComponent(DataContainer)
 
