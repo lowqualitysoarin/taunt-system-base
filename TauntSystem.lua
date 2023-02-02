@@ -10,6 +10,8 @@ function TauntSystem:Start()
 	self.tauntPrefabs = {}
 	self.alreadyTauntingList = {}
 
+	self.playerTauntPrefab = nil
+
 	-- Configuration
 	self.chance = self.script.mutator.GetConfigurationRange("chance")
 
@@ -29,6 +31,7 @@ function TauntSystem:Start()
 
 	self.playerIsTaunting = false
 	self.firstButtonPressed = false
+	self.canCancelTaunt = false
 	self.resetTime = false
 
 	self.pressTime = 0
@@ -119,7 +122,21 @@ function TauntSystem:Update()
 				self.firstButtonPressed = false
 				self.resetTime = false
 			end
+
+			-- Stops the taunting animation
+			if (Input.GetKeyDown(self.tauntBind) and self.canCancelTaunt and self.playerTauntPrefab ~= nil) then
+				self:CancelTaunt(self.playerTauntPrefab)
+				self.canCancelTaunt = false
+			end
 		end
+	end
+end
+
+function TauntSystem:CancelTaunt(tauntPrefab)
+	local tauntScript = tauntPrefab.gameObject.GetComponent(ScriptedBehaviour).self
+
+	if (tauntScript ~= nil) then
+		tauntScript.timer = tauntScript.animationTime
 	end
 end
 
@@ -237,6 +254,12 @@ function TauntSystem:PlayerTaunt(player)
 
 	-- Set camera to thirdperson mode
 	PlayerCamera.ThirdPersonCamera()
+
+	-- Assign the taunt prefab
+	self.playerTauntPrefab = dupeTaunt
+
+	-- Call the cancel taunt coroutine soo the player can cancel the taunt
+	self.script.StartCoroutine(self:CancelTauntTime())
 end
 
 function TauntSystem:GetTauntMods()
@@ -285,5 +308,12 @@ function TauntSystem:GetTauntMods()
 		else
 			print("<color=red>[TS] Taunt System Disabled. No Taunt Mods Found.</color>")
 		end
+	end
+end
+
+function TauntSystem:CancelTauntTime()
+	return function()
+		coroutine.yield(WaitForSeconds(0.45))
+		self.canCancelTaunt = true
 	end
 end
